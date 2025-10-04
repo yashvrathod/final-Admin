@@ -1,0 +1,192 @@
+import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
+import { Trash2 } from "lucide-react"
+
+async function getJournals() {
+  return await prisma.journal.findMany({
+    orderBy: { order: "asc" },
+  })
+}
+
+async function createJournal(formData: FormData) {
+  "use server"
+
+  const title = formData.get("title") as string
+  const authors = formData.get("authors") as string
+  const journal = formData.get("journal") as string
+  const year = formData.get("year") as string
+  const volume = formData.get("volume") as string
+  const issue = formData.get("issue") as string
+  const pages = formData.get("pages") as string
+  const doi = formData.get("doi") as string
+  const url = formData.get("url") as string
+  const abstract = formData.get("abstract") as string
+
+  const maxOrder = await prisma.journal.findFirst({
+    orderBy: { order: "desc" },
+    select: { order: true },
+  })
+
+  await prisma.journal.create({
+    data: {
+      title,
+      authors,
+      journal,
+      year,
+      volume,
+      issue,
+      pages,
+      doi,
+      url,
+      abstract,
+      order: (maxOrder?.order || 0) + 1,
+    },
+  })
+
+  revalidatePath("/admin/journals")
+}
+
+async function deleteJournal(formData: FormData) {
+  "use server"
+
+  const id = formData.get("id") as string
+  await prisma.journal.delete({ where: { id } })
+  revalidatePath("/admin/journals")
+}
+
+async function toggleJournal(formData: FormData) {
+  "use server"
+
+  const id = formData.get("id") as string
+  const isActive = formData.get("isActive") === "true"
+
+  await prisma.journal.update({
+    where: { id },
+    data: { isActive: !isActive },
+  })
+
+  revalidatePath("/admin/journals")
+}
+
+export default async function JournalsPage() {
+  const journals = await getJournals()
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Journal Publications</h1>
+        <p className="text-slate-500">Manage your published journal articles</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Add Journal Publication</CardTitle>
+          <CardDescription>Add a new journal article</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form action={createJournal} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Article Title</Label>
+              <Input id="title" name="title" placeholder="Title of the research paper" required />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="authors">Authors</Label>
+              <Input id="authors" name="authors" placeholder="Smith, J., Doe, A., et al." required />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="journal">Journal Name</Label>
+                <Input id="journal" name="journal" placeholder="Nature" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="year">Year</Label>
+                <Input id="year" name="year" placeholder="2024" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="volume">Volume</Label>
+                <Input id="volume" name="volume" placeholder="42" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="issue">Issue</Label>
+                <Input id="issue" name="issue" placeholder="3" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pages">Pages</Label>
+                <Input id="pages" name="pages" placeholder="123-145" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="doi">DOI</Label>
+                <Input id="doi" name="doi" placeholder="10.1000/xyz123" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="url">URL</Label>
+                <Input id="url" name="url" placeholder="https://..." />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="abstract">Abstract</Label>
+              <Textarea id="abstract" name="abstract" placeholder="Article abstract..." rows={4} />
+            </div>
+
+            <Button type="submit">Add Publication</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Publications List</CardTitle>
+          <CardDescription>Manage existing journal publications</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {journals.length === 0 ? (
+              <p className="text-sm text-slate-500">No publications yet</p>
+            ) : (
+              journals.map((journal) => (
+                <div key={journal.id} className="flex items-start justify-between p-4 border rounded-lg">
+                  <div className="flex-1">
+                    <div className="font-medium">{journal.title}</div>
+                    <div className="text-sm text-slate-500">{journal.authors}</div>
+                    <div className="text-sm text-slate-500">
+                      {journal.journal} {journal.year && `(${journal.year})`}
+                    </div>
+                    {journal.doi && <div className="text-sm text-primary">DOI: {journal.doi}</div>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <form action={toggleJournal}>
+                      <input type="hidden" name="id" value={journal.id} />
+                      <input type="hidden" name="isActive" value={String(journal.isActive)} />
+                      <Switch checked={journal.isActive} />
+                    </form>
+                    <form action={deleteJournal}>
+                      <input type="hidden" name="id" value={journal.id} />
+                      <Button type="submit" variant="ghost" size="icon">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </form>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

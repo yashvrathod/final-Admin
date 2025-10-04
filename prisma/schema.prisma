@@ -1,0 +1,443 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Admin Users for authentication
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Site Settings - Global configuration
+model SiteSettings {
+  id          String   @id @default(cuid())
+  siteName    String
+  siteTagline String?
+  logoUrl     String?
+  faviconUrl  String?
+  metaTitle   String?
+  metaDescription String?
+  createdAt   DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Navigation Menu Items
+model NavItem {
+  id        String   @id @default(cuid())
+  label     String
+  href      String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Hero Section
+model HeroSection {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  description String?
+  imageUrl    String?
+  ctaText     String?
+  ctaLink     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// About Section
+model AboutSection {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Timeline Items
+model TimelineItem {
+  id          String   @id @default(cuid())
+  year        String
+  title       String
+  description String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Stats
+model Stat {
+  id        String   @id @default(cuid())
+  label     String
+  value     String
+  icon      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Academic Interests
+model AcademicInterest {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  icon        String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Skills
+model Skill {
+  id        String   @id @default(cuid())
+  name      String
+  category  String?
+  level     String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Teaching Experience
+model Teaching {
+  id          String   @id @default(cuid())
+  course      String
+  institution String
+  duration    String?
+  description String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Certification {
+  id          String   @id @default(cuid())
+  name        String?   // Changed from title to name to match the data
+  details     String?  // Added for certification details
+  link        String?  // Added for certification link
+  linkText    String?  // Added for link text
+  provider    String?   // Changed from issuer to provider
+  year        String?   // Added year field
+  issueDate   String?
+  expiryDate  String?
+  credentialId String?
+  credentialUrl String?
+  description String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Talk {
+  id          String   @id @default(cuid())
+  college     String?   // Changed from title to college
+  topic       String?  // Changed from event to topic
+  link        String?  // Changed from slidesUrl
+  date        String?
+  location    String?
+  description String?
+  videoUrl    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id              String   @id @default(cuid())
+  title           String
+  shortDescription String? // Changed from description
+  type            String?  // Added for "Industry Sponsored" or "In-House"
+  typeCompany     String?  // Added for company name in type
+  typeUrl         String?  // Added for company URL
+  image           String?  // Changed from imageUrl
+  testimonial     String?  // Added for testimonial
+  ytLink          String?  // Added for YouTube link
+  linkedinPost    String?  // Added for LinkedIn post
+  skills          String[] // Added for skills array
+  technologies    String?
+  projectUrl      String?
+  githubUrl       String?
+  startDate       String?
+  endDate         String?
+  order           Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Journal {
+  id          String   @id @default(cuid())
+  title       String
+  authors     String
+  journal     String
+  details     String?  // Added for full details string
+  link        String?  // Changed from url
+  type        String   @default("international") // Added for national/international
+  year        String?
+  volume      String?
+  issue       String?
+  pages       String?
+  doi         String?
+  abstract    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Conference {
+  id          String   @id @default(cuid())
+  title       String
+  authors     String
+  event       String   // Changed from conference to event
+  details     String?  // Added for full details string
+  link        String?  // Changed from url
+  type        String   @default("international") // Added for national/international
+  year        String?
+  location    String?
+  doi         String?
+  abstract    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Book {
+  id          String   @id @default(cuid())
+  title       String
+  course      String?  // Added for course information
+  authors     String
+  publisher   String?
+  year        String?
+  isbn        String?
+  link        String?  // Changed from url
+  description String?
+  coverUrl    String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BookChapter {
+  id          String   @id @default(cuid())
+  year        String
+  chapterTitle String
+  bookTitle   String
+  doi         String?
+  doiLink     String?
+  isbn        String?
+  coAuthors   String
+  scopusLink  String?
+  crossrefLink String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Patent {
+  id          String   @id @default(cuid())
+  title       String
+  inventors   String
+  patentNumber String?
+  applicationNumber String? // Added for application number
+  filingDate  String?
+  grantDate   String?
+  publishedDate String? // Added for published date
+  status      String   @default("filed") // granted, published, filed
+  url         String?
+  description String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Corporate Connections
+model CorporateConnection {
+  id          String   @id @default(cuid())
+  company     String
+  role        String?
+  duration    String?
+  description String?
+  logoUrl     String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Testimonials
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  company   String?
+  content   String
+  avatarUrl String?
+  rating    Int?
+  category  String?  // industry/students/collaborators
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Contact Form Submissions
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Internships
+model Internship {
+  id        String   @id @default(cuid())
+  company   String
+  details   String
+  link      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Industry Visits
+model IndustryVisit {
+  id        String   @id @default(cuid())
+  name      String
+  link      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Research Interests
+model ResearchInterest {
+  id        String   @id @default(cuid())
+  interest  String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Teaching Interests
+model TeachingInterest {
+  id        String   @id @default(cuid())
+  interest  String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Area of Interests
+model AreaOfInterest {
+  id        String   @id @default(cuid())
+  interest  String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UltimateGoal {
+  id        String   @id @default(cuid())
+  title     String
+  description String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Professional Info
+model ProfessionalInfo {
+  id        String   @id @default(cuid())
+  title     String
+  text      String
+  icon      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProfessionalSummary {
+  id        String   @id @default(cuid())
+  summary   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Skill Sections (Network Skills, Tools, Programming, etc.)
+model SkillSection {
+  id        String   @id @default(cuid())
+  title     String
+  icon      String?
+  color     String?
+  items     String[] // Array of skill items
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Courses Taught
+model CourseTaught {
+  id        String   @id @default(cuid())
+  course    String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Project Guidance
+model ProjectGuidance {
+  id        String   @id @default(cuid())
+  guidance  String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProjectSkill {
+  id        String   @id @default(cuid())
+  skill     String   @unique
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
