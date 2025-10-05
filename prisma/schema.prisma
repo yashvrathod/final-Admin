@@ -313,6 +313,7 @@ model ContactSubmission {
   email     String
   subject   String?
   message   String
+   consent   Boolean  @default(false)
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
