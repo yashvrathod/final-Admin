@@ -1,3 +1,4 @@
+// app/admin/conferences/page.tsx
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { Button } from "@/components/ui/button";
@@ -15,23 +16,30 @@ import { Switch } from "@/components/ui/switch";
 import { Trash2 } from "lucide-react";
 import { FiExternalLink } from "react-icons/fi";
 
+// Fetch conferences at runtime with error handling
 async function getConferences() {
-  return await prisma.conference.findMany({
-    orderBy: { order: "asc" },
-  });
+  try {
+    return await prisma.conference.findMany({
+      orderBy: { order: "asc" },
+    });
+  } catch (error) {
+    console.error("Failed to fetch conferences:", error);
+    return [];
+  }
 }
 
+// Create new conference
 async function createConference(formData: FormData) {
   "use server";
 
-  const title = formData.get("title") as string;
-  const authors = formData.get("authors") as string;
-  const event = formData.get("conference") as string;
-  const year = formData.get("year") as string;
-  const location = formData.get("location") as string;
-  const doi = formData.get("doi") as string;
-  const link = formData.get("url") as string;
-  const abstract = formData.get("abstract") as string;
+  const title = formData.get("title")?.toString() || "";
+  const authors = formData.get("authors")?.toString() || "";
+  const event = formData.get("conference")?.toString() || "";
+  const year = formData.get("year")?.toString() || "";
+  const location = formData.get("location")?.toString() || "";
+  const doi = formData.get("doi")?.toString() || "";
+  const link = formData.get("url")?.toString() || "";
+  const abstract = formData.get("abstract")?.toString() || "";
 
   const maxOrder = await prisma.conference.findFirst({
     orderBy: { order: "desc" },
@@ -55,19 +63,25 @@ async function createConference(formData: FormData) {
   revalidatePath("/admin/conferences");
 }
 
+// Delete a conference
 async function deleteConference(formData: FormData) {
   "use server";
 
-  const id = formData.get("id") as string;
+  const id = formData.get("id")?.toString();
+  if (!id) return;
+
   await prisma.conference.delete({ where: { id } });
   revalidatePath("/admin/conferences");
 }
 
+// Toggle active status
 async function toggleConference(formData: FormData) {
   "use server";
 
-  const id = formData.get("id") as string;
+  const id = formData.get("id")?.toString();
   const isActive = formData.get("isActive") === "true";
+
+  if (!id) return;
 
   await prisma.conference.update({
     where: { id },
@@ -81,7 +95,8 @@ export default async function ConferencesPage() {
   const conferences = await getConferences();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
+      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Conference Papers</h1>
         <p className="text-slate-500">Manage your conference publications</p>
@@ -205,7 +220,9 @@ export default async function ConferencesPage() {
                       Paper Link <FiExternalLink className="ml-1" size={14} />
                     </a>
                   )}
+
                   <div className="flex items-center gap-2 mt-2">
+                    {/* Toggle Active */}
                     <form action={toggleConference}>
                       <input type="hidden" name="id" value={conf.id} />
                       <input
@@ -215,6 +232,8 @@ export default async function ConferencesPage() {
                       />
                       <Switch checked={conf.isActive} />
                     </form>
+
+                    {/* Delete */}
                     <form action={deleteConference}>
                       <input type="hidden" name="id" value={conf.id} />
                       <Button type="submit" variant="ghost" size="icon">
