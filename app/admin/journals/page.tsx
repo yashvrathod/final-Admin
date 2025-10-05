@@ -25,18 +25,20 @@ async function getJournals() {
 async function createJournal(formData: FormData) {
   "use server";
 
-  const title = formData.get("title") as string;
-  const authors = formData.get("authors") as string;
-  const journalName = formData.get("journal") as string;
-  const type = (formData.get("type") as string) || "international";
-  const year = formData.get("year") as string;
-  const volume = formData.get("volume") as string;
-  const issue = formData.get("issue") as string;
-  const pages = formData.get("pages") as string;
-  const doi = formData.get("doi") as string;
-  const link = formData.get("link") as string;
-  const abstract = formData.get("abstract") as string;
-  const details = formData.get("details") as string;
+  const title = formData.get("title")?.toString() ?? "";
+  const authors = formData.get("authors")?.toString() ?? "";
+  const journalName = formData.get("journal")?.toString() ?? "";
+  const type =
+    (formData.get("type")?.toString() as "international" | "national") ??
+    "international";
+  const year = formData.get("year")?.toString() ?? "";
+  const volume = formData.get("volume")?.toString() ?? "";
+  const issue = formData.get("issue")?.toString() ?? "";
+  const pages = formData.get("pages")?.toString() ?? "";
+  const doi = formData.get("doi")?.toString() ?? "";
+  const link = formData.get("link")?.toString() ?? "";
+  const abstract = formData.get("abstract")?.toString() ?? "";
+  const details = formData.get("details")?.toString() ?? "";
 
   const maxOrder = await prisma.journal.findFirst({
     orderBy: { order: "desc" },
@@ -67,8 +69,8 @@ async function createJournal(formData: FormData) {
 // Delete
 async function deleteJournal(formData: FormData) {
   "use server";
-
-  const id = formData.get("id") as string;
+  const id = formData.get("id")?.toString();
+  if (!id) return;
   await prisma.journal.delete({ where: { id } });
   revalidatePath("/admin/journals");
 }
@@ -76,9 +78,9 @@ async function deleteJournal(formData: FormData) {
 // Toggle
 async function toggleJournal(formData: FormData) {
   "use server";
-
-  const id = formData.get("id") as string;
+  const id = formData.get("id")?.toString();
   const isActive = formData.get("isActive") === "true";
+  if (!id) return;
 
   await prisma.journal.update({
     where: { id },
@@ -99,6 +101,7 @@ export default async function JournalsPage() {
         <p className="text-slate-500">Manage your published journal articles</p>
       </div>
 
+      {/* Add Journal Form */}
       <Card>
         <CardHeader>
           <CardTitle>Add Journal Publication</CardTitle>
@@ -205,6 +208,7 @@ export default async function JournalsPage() {
         </CardContent>
       </Card>
 
+      {/* List of Journals */}
       <Card>
         <CardHeader>
           <CardTitle>Publications List</CardTitle>
@@ -238,7 +242,11 @@ export default async function JournalsPage() {
                     )}
                     {journal.link && (
                       <div className="text-sm text-blue-600 underline">
-                        <a href={journal.link} target="_blank">
+                        <a
+                          href={journal.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           {journal.link}
                         </a>
                       </div>
