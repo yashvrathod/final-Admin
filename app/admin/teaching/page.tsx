@@ -1,147 +1,187 @@
-import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Trash2 } from "lucide-react"
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Trash2 } from "lucide-react";
 
-async function getTeaching() {
-  return await prisma.teaching.findMany({
-    orderBy: { order: "asc" },
-  })
+// Fetch data
+async function getCourses() {
+  return prisma.courseTaught.findMany({ orderBy: { order: "asc" } });
 }
 
-async function createTeaching(formData: FormData) {
-  "use server"
+async function getProjects() {
+  return prisma.projectGuidance.findMany({ orderBy: { order: "asc" } });
+}
 
-  const course = formData.get("course") as string
-  const institution = formData.get("institution") as string
-  const duration = formData.get("duration") as string
-  const description = formData.get("description") as string
-
-  const maxOrder = await prisma.teaching.findFirst({
+// Create
+async function createCourse(formData: FormData) {
+  "use server";
+  const course = formData.get("course") as string;
+  const maxOrder = await prisma.courseTaught.findFirst({
     orderBy: { order: "desc" },
     select: { order: true },
-  })
-
-  await prisma.teaching.create({
-    data: {
-      course,
-      institution,
-      duration,
-      description,
-      order: (maxOrder?.order || 0) + 1,
-    },
-  })
-
-  revalidatePath("/admin/teaching")
+  });
+  await prisma.courseTaught.create({
+    data: { course, order: (maxOrder?.order || 0) + 1 },
+  });
+  revalidatePath("/admin/teaching-projects");
 }
 
-async function deleteTeaching(formData: FormData) {
-  "use server"
-
-  const id = formData.get("id") as string
-  await prisma.teaching.delete({ where: { id } })
-  revalidatePath("/admin/teaching")
+async function createProject(formData: FormData) {
+  "use server";
+  const guidance = formData.get("guidance") as string;
+  const maxOrder = await prisma.projectGuidance.findFirst({
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+  await prisma.projectGuidance.create({
+    data: { guidance, order: (maxOrder?.order || 0) + 1 },
+  });
+  revalidatePath("/admin/teaching-projects");
 }
 
-async function toggleTeaching(formData: FormData) {
-  "use server"
+// Delete
+async function deleteCourse(formData: FormData) {
+  "use server";
+  const id = formData.get("id") as string;
+  await prisma.courseTaught.delete({ where: { id } });
+  revalidatePath("/admin/teaching-projects");
+}
 
-  const id = formData.get("id") as string
-  const isActive = formData.get("isActive") === "true"
+async function deleteProject(formData: FormData) {
+  "use server";
+  const id = formData.get("id") as string;
+  await prisma.projectGuidance.delete({ where: { id } });
+  revalidatePath("/admin/teaching-projects");
+}
 
-  await prisma.teaching.update({
+// Toggle
+async function toggleCourse(formData: FormData) {
+  "use server";
+  const id = formData.get("id") as string;
+  const isActive = formData.get("isActive") === "true";
+  await prisma.courseTaught.update({
     where: { id },
     data: { isActive: !isActive },
-  })
-
-  revalidatePath("/admin/teaching")
+  });
+  revalidatePath("/admin/teaching-projects");
 }
 
-export default async function TeachingPage() {
-  const teaching = await getTeaching()
+async function toggleProject(formData: FormData) {
+  "use server";
+  const id = formData.get("id") as string;
+  const isActive = formData.get("isActive") === "true";
+  await prisma.projectGuidance.update({
+    where: { id },
+    data: { isActive: !isActive },
+  });
+  revalidatePath("/admin/teaching-projects");
+}
+
+// Page
+export default async function TeachingProjectsPage() {
+  const courses = await getCourses();
+  const projects = await getProjects();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Teaching Experience</h1>
-        <p className="text-slate-500">Manage your teaching history</p>
+        <h1 className="text-3xl font-bold">Teaching & Project Guidance</h1>
+        <p className="text-slate-500">
+          Manage courses taught and project guidance
+        </p>
       </div>
 
+      {/* Courses Taught */}
       <Card>
         <CardHeader>
-          <CardTitle>Add Teaching Experience</CardTitle>
-          <CardDescription>Add a new course or teaching position</CardDescription>
+          <CardTitle>Add Course Taught</CardTitle>
+          <CardDescription>Add a new course</CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={createTeaching} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="course">Course Name</Label>
-                <Input id="course" name="course" placeholder="Data Structures" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="institution">Institution</Label>
-                <Input id="institution" name="institution" placeholder="MIT" required />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="duration">Duration</Label>
-              <Input id="duration" name="duration" placeholder="Fall 2023 - Spring 2024" />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea id="description" name="description" placeholder="Course details..." rows={3} />
-            </div>
-
-            <Button type="submit">Add Teaching Experience</Button>
+          <form action={createCourse} className="flex gap-2 mb-4">
+            <Input name="course" placeholder="Course Name" required />
+            <Button type="submit">Add</Button>
           </form>
+          <div className="space-y-2">
+            {courses.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between p-2 border rounded-lg"
+              >
+                <span>{item.course}</span>
+                <div className="flex items-center gap-2">
+                  <form action={toggleCourse}>
+                    <input type="hidden" name="id" value={item.id} />
+                    <input
+                      type="hidden"
+                      name="isActive"
+                      value={String(item.isActive)}
+                    />
+                    <Switch checked={item.isActive} />
+                  </form>
+                  <form action={deleteCourse}>
+                    <input type="hidden" name="id" value={item.id} />
+                    <Button type="submit" variant="ghost" size="icon">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
+      {/* Project Guidance */}
       <Card>
         <CardHeader>
-          <CardTitle>Teaching History</CardTitle>
-          <CardDescription>Manage existing teaching experiences</CardDescription>
+          <CardTitle>Add Project Guidance</CardTitle>
+          <CardDescription>Add a new guidance record</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {teaching.length === 0 ? (
-              <p className="text-sm text-slate-500">No teaching experience yet</p>
-            ) : (
-              teaching.map((item) => (
-                <div key={item.id} className="flex items-start justify-between p-4 border rounded-lg">
-                  <div className="flex-1">
-                    <div className="font-medium">{item.course}</div>
-                    <div className="text-sm text-slate-500">{item.institution}</div>
-                    {item.duration && <div className="text-sm text-slate-500">{item.duration}</div>}
-                    {item.description && <p className="text-sm text-slate-500 mt-1">{item.description}</p>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <form action={toggleTeaching}>
-                      <input type="hidden" name="id" value={item.id} />
-                      <input type="hidden" name="isActive" value={String(item.isActive)} />
-                      <Switch checked={item.isActive} />
-                    </form>
-                    <form action={deleteTeaching}>
-                      <input type="hidden" name="id" value={item.id} />
-                      <Button type="submit" variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </form>
-                  </div>
+          <form action={createProject} className="flex gap-2 mb-4">
+            <Input name="guidance" placeholder="Project Guidance" required />
+            <Button type="submit">Add</Button>
+          </form>
+          <div className="space-y-2">
+            {projects.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center justify-between p-2 border rounded-lg"
+              >
+                <span>{item.guidance}</span>
+                <div className="flex items-center gap-2">
+                  <form action={toggleProject}>
+                    <input type="hidden" name="id" value={item.id} />
+                    <input
+                      type="hidden"
+                      name="isActive"
+                      value={String(item.isActive)}
+                    />
+                    <Switch checked={item.isActive} />
+                  </form>
+                  <form action={deleteProject}>
+                    <input type="hidden" name="id" value={item.id} />
+                    <Button type="submit" variant="ghost" size="icon">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </form>
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

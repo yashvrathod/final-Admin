@@ -1,81 +1,96 @@
-import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Trash2 } from "lucide-react"
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Trash2 } from "lucide-react";
 
+// Fetch data
 async function getJournals() {
-  return await prisma.journal.findMany({
+  return prisma.journal.findMany({
     orderBy: { order: "asc" },
-  })
+  });
 }
 
+// Create
 async function createJournal(formData: FormData) {
-  "use server"
+  "use server";
 
-  const title = formData.get("title") as string
-  const authors = formData.get("authors") as string
-  const journal = formData.get("journal") as string
-  const year = formData.get("year") as string
-  const volume = formData.get("volume") as string
-  const issue = formData.get("issue") as string
-  const pages = formData.get("pages") as string
-  const doi = formData.get("doi") as string
-  const url = formData.get("url") as string
-  const abstract = formData.get("abstract") as string
+  const title = formData.get("title") as string;
+  const authors = formData.get("authors") as string;
+  const journalName = formData.get("journal") as string;
+  const type = (formData.get("type") as string) || "international";
+  const year = formData.get("year") as string;
+  const volume = formData.get("volume") as string;
+  const issue = formData.get("issue") as string;
+  const pages = formData.get("pages") as string;
+  const doi = formData.get("doi") as string;
+  const link = formData.get("link") as string;
+  const abstract = formData.get("abstract") as string;
+  const details = formData.get("details") as string;
 
   const maxOrder = await prisma.journal.findFirst({
     orderBy: { order: "desc" },
     select: { order: true },
-  })
+  });
 
   await prisma.journal.create({
     data: {
       title,
       authors,
-      journal,
+      journal: journalName,
+      type,
       year,
       volume,
       issue,
       pages,
       doi,
-      url,
+      link,
       abstract,
+      details,
       order: (maxOrder?.order || 0) + 1,
     },
-  })
+  });
 
-  revalidatePath("/admin/journals")
+  revalidatePath("/admin/journals");
 }
 
+// Delete
 async function deleteJournal(formData: FormData) {
-  "use server"
+  "use server";
 
-  const id = formData.get("id") as string
-  await prisma.journal.delete({ where: { id } })
-  revalidatePath("/admin/journals")
+  const id = formData.get("id") as string;
+  await prisma.journal.delete({ where: { id } });
+  revalidatePath("/admin/journals");
 }
 
+// Toggle
 async function toggleJournal(formData: FormData) {
-  "use server"
+  "use server";
 
-  const id = formData.get("id") as string
-  const isActive = formData.get("isActive") === "true"
+  const id = formData.get("id") as string;
+  const isActive = formData.get("isActive") === "true";
 
   await prisma.journal.update({
     where: { id },
     data: { isActive: !isActive },
-  })
+  });
 
-  revalidatePath("/admin/journals")
+  revalidatePath("/admin/journals");
 }
 
+// Page
 export default async function JournalsPage() {
-  const journals = await getJournals()
+  const journals = await getJournals();
 
   return (
     <div className="space-y-6">
@@ -93,26 +108,52 @@ export default async function JournalsPage() {
           <form action={createJournal} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="title">Article Title</Label>
-              <Input id="title" name="title" placeholder="Title of the research paper" required />
+              <Input
+                id="title"
+                name="title"
+                placeholder="Title of the research paper"
+                required
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="authors">Authors</Label>
-              <Input id="authors" name="authors" placeholder="Smith, J., Doe, A., et al." required />
+              <Input
+                id="authors"
+                name="authors"
+                placeholder="Smith, J., Doe, A., et al."
+                required
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="journal">Journal Name</Label>
-                <Input id="journal" name="journal" placeholder="Nature" required />
+                <Input
+                  id="journal"
+                  name="journal"
+                  placeholder="Nature"
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="year">Year</Label>
-                <Input id="year" name="year" placeholder="2024" />
+                <Label htmlFor="type">Type</Label>
+                <select
+                  id="type"
+                  name="type"
+                  className="border rounded p-2 w-full"
+                >
+                  <option value="international">International</option>
+                  <option value="national">National</option>
+                </select>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="year">Year</Label>
+                <Input id="year" name="year" placeholder="2024" />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="volume">Volume</Label>
                 <Input id="volume" name="volume" placeholder="42" />
@@ -121,26 +162,42 @@ export default async function JournalsPage() {
                 <Label htmlFor="issue">Issue</Label>
                 <Input id="issue" name="issue" placeholder="3" />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="pages">Pages</Label>
-                <Input id="pages" name="pages" placeholder="123-145" />
-              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="doi">DOI</Label>
-                <Input id="doi" name="doi" placeholder="10.1000/xyz123" />
+                <Label htmlFor="pages">Pages</Label>
+                <Input id="pages" name="pages" placeholder="123-145" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="url">URL</Label>
-                <Input id="url" name="url" placeholder="https://..." />
+                <Label htmlFor="doi">DOI</Label>
+                <Input id="doi" name="doi" placeholder="10.1000/xyz123" />
               </div>
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="link">Link</Label>
+              <Input id="link" name="link" placeholder="https://..." />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="abstract">Abstract</Label>
-              <Textarea id="abstract" name="abstract" placeholder="Article abstract..." rows={4} />
+              <Textarea
+                id="abstract"
+                name="abstract"
+                placeholder="Article abstract..."
+                rows={4}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="details">Details</Label>
+              <Textarea
+                id="details"
+                name="details"
+                placeholder="Full article details..."
+                rows={3}
+              />
             </div>
 
             <Button type="submit">Add Publication</Button>
@@ -151,7 +208,9 @@ export default async function JournalsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Publications List</CardTitle>
-          <CardDescription>Manage existing journal publications</CardDescription>
+          <CardDescription>
+            Manage existing journal publications
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -159,19 +218,40 @@ export default async function JournalsPage() {
               <p className="text-sm text-slate-500">No publications yet</p>
             ) : (
               journals.map((journal) => (
-                <div key={journal.id} className="flex items-start justify-between p-4 border rounded-lg">
+                <div
+                  key={journal.id}
+                  className="flex items-start justify-between p-4 border rounded-lg"
+                >
                   <div className="flex-1">
                     <div className="font-medium">{journal.title}</div>
-                    <div className="text-sm text-slate-500">{journal.authors}</div>
                     <div className="text-sm text-slate-500">
-                      {journal.journal} {journal.year && `(${journal.year})`}
+                      {journal.authors}
                     </div>
-                    {journal.doi && <div className="text-sm text-primary">DOI: {journal.doi}</div>}
+                    <div className="text-sm text-slate-500">
+                      {journal.journal} {journal.year && `(${journal.year})`} •{" "}
+                      {journal.type}
+                    </div>
+                    {journal.doi && (
+                      <div className="text-sm text-primary">
+                        DOI: {journal.doi}
+                      </div>
+                    )}
+                    {journal.link && (
+                      <div className="text-sm text-blue-600 underline">
+                        <a href={journal.link} target="_blank">
+                          {journal.link}
+                        </a>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <form action={toggleJournal}>
                       <input type="hidden" name="id" value={journal.id} />
-                      <input type="hidden" name="isActive" value={String(journal.isActive)} />
+                      <input
+                        type="hidden"
+                        name="isActive"
+                        value={String(journal.isActive)}
+                      />
                       <Switch checked={journal.isActive} />
                     </form>
                     <form action={deleteJournal}>
@@ -188,5 +268,5 @@ export default async function JournalsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

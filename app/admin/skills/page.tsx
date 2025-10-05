@@ -1,132 +1,193 @@
-import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Trash2 } from "lucide-react"
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Trash2 } from "lucide-react";
 
-async function getSkills() {
-  return await prisma.skill.findMany({
+// Fetch all sections
+async function getSections() {
+  return await prisma.skillSection.findMany({
     orderBy: { order: "asc" },
-  })
+  });
 }
 
-async function createSkill(formData: FormData) {
-  "use server"
+// Create a new section
+async function createSection(formData: FormData) {
+  "use server";
 
-  const name = formData.get("name") as string
-  const category = formData.get("category") as string
-  const level = formData.get("level") as string
+  const title = formData.get("title") as string;
+  const icon = formData.get("icon") as string;
+  const color = formData.get("color") as string;
+  const itemsRaw = formData.get("items") as string;
 
-  const maxOrder = await prisma.skill.findFirst({
+  const items = itemsRaw
+    ? itemsRaw
+        .split(",")
+        .map((i) => i.trim())
+        .filter(Boolean)
+    : [];
+
+  const maxOrder = await prisma.skillSection.findFirst({
     orderBy: { order: "desc" },
     select: { order: true },
-  })
+  });
 
-  await prisma.skill.create({
+  await prisma.skillSection.create({
     data: {
-      name,
-      category,
-      level,
+      title,
+      icon,
+      color,
+      items,
       order: (maxOrder?.order || 0) + 1,
     },
-  })
+  });
 
-  revalidatePath("/admin/skills")
+  revalidatePath("/admin/skills");
 }
 
-async function deleteSkill(formData: FormData) {
-  "use server"
-
-  const id = formData.get("id") as string
-  await prisma.skill.delete({ where: { id } })
-  revalidatePath("/admin/skills")
+// Delete a section
+async function deleteSection(formData: FormData) {
+  "use server";
+  const id = formData.get("id") as string;
+  await prisma.skillSection.delete({ where: { id } });
+  revalidatePath("/admin/skills");
 }
 
-async function toggleSkill(formData: FormData) {
-  "use server"
+// Toggle active status
+async function toggleSection(formData: FormData) {
+  "use server";
+  const id = formData.get("id") as string;
+  const isActive = formData.get("isActive") === "true";
 
-  const id = formData.get("id") as string
-  const isActive = formData.get("isActive") === "true"
-
-  await prisma.skill.update({
+  await prisma.skillSection.update({
     where: { id },
     data: { isActive: !isActive },
-  })
+  });
 
-  revalidatePath("/admin/skills")
+  revalidatePath("/admin/skills");
 }
 
 export default async function SkillsPage() {
-  const skills = await getSkills()
+  const sections = await getSections();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Skills</h1>
-        <p className="text-slate-500">Manage your technical and academic skills</p>
+        <h1 className="text-3xl font-bold">Skill Sections</h1>
+        <p className="text-slate-500">
+          Manage categorized technical and academic skills
+        </p>
       </div>
 
+      {/* Add Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Add Skill</CardTitle>
-          <CardDescription>Add a new skill to your profile</CardDescription>
+          <CardTitle>Add Skill Section</CardTitle>
+          <CardDescription>
+            Add a new skill category with multiple skills
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={createSkill} className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
+          <form action={createSection} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Skill Name</Label>
-                <Input id="name" name="name" placeholder="Python" required />
+                <Label htmlFor="title">Section Title</Label>
+                <Input
+                  id="title"
+                  name="title"
+                  placeholder="Network Skills"
+                  required
+                />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Input id="category" name="category" placeholder="Programming" />
+                <Label htmlFor="icon">Icon</Label>
+                <Input id="icon" name="icon" placeholder="FiWifi" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="level">Level</Label>
-                <Input id="level" name="level" placeholder="Expert" />
+                <Label htmlFor="color">Color (Tailwind classes)</Label>
+                <Input
+                  id="color"
+                  name="color"
+                  placeholder="bg-yellow-50 border-yellow-200"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="items">Items (comma-separated)</Label>
+                <Input
+                  id="items"
+                  name="items"
+                  placeholder="LAN Configuration, Network Programming, Wireshark"
+                />
               </div>
             </div>
 
-            <Button type="submit">Add Skill</Button>
+            <Button type="submit">Add Section</Button>
           </form>
         </CardContent>
       </Card>
 
+      {/* List of Sections */}
       <Card>
         <CardHeader>
-          <CardTitle>Skills List</CardTitle>
-          <CardDescription>Manage existing skills</CardDescription>
+          <CardTitle>Skill Sections List</CardTitle>
+          <CardDescription>
+            Manage your existing skill categories
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {skills.length === 0 ? (
-              <p className="text-sm text-slate-500">No skills yet</p>
+            {sections.length === 0 ? (
+              <p className="text-sm text-slate-500">No sections yet</p>
             ) : (
-              skills.map((skill) => (
-                <div key={skill.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <div className="font-medium">{skill.name}</div>
-                    <div className="text-sm text-slate-500">
-                      {skill.category} {skill.level && `• ${skill.level}`}
+              sections.map((section) => (
+                <div
+                  key={section.id}
+                  className="flex flex-col gap-2 p-4 border rounded-lg"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-lg">{section.title}</div>
+                      <div className="text-sm text-slate-500">
+                        {section.icon && <span>Icon: {section.icon} • </span>}
+                        {section.color}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <form action={toggleSection}>
+                        <input type="hidden" name="id" value={section.id} />
+                        <input
+                          type="hidden"
+                          name="isActive"
+                          value={String(section.isActive)}
+                        />
+                        <Switch checked={section.isActive} />
+                      </form>
+                      <form action={deleteSection}>
+                        <input type="hidden" name="id" value={section.id} />
+                        <Button type="submit" variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </form>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <form action={toggleSkill}>
-                      <input type="hidden" name="id" value={skill.id} />
-                      <input type="hidden" name="isActive" value={String(skill.isActive)} />
-                      <Switch checked={skill.isActive} />
-                    </form>
-                    <form action={deleteSkill}>
-                      <input type="hidden" name="id" value={skill.id} />
-                      <Button type="submit" variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </form>
-                  </div>
+
+                  {/* Skill items list */}
+                  {section.items.length > 0 && (
+                    <ul className="list-disc list-inside text-sm text-slate-600">
+                      {section.items.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))
             )}
@@ -134,5 +195,5 @@ export default async function SkillsPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

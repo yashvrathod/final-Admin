@@ -1,13 +1,13 @@
-import { PrismaClient } from "@prisma/client"
-import bcrypt from "bcryptjs"
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-  console.log("[v0] Starting database seed...")
+  console.log("[v0] Starting database seed...");
 
   // Create default admin user
-  const hashedPassword = await bcrypt.hash("admin123", 10)
+  const hashedPassword = await bcrypt.hash("admin123", 10);
   const admin = await prisma.adminUser.upsert({
     where: { email: "admin@example.com" },
     update: {},
@@ -17,8 +17,8 @@ async function main() {
       name: "Admin User",
       role: "admin",
     },
-  })
-  console.log("[v0] Created admin user:", admin.email)
+  });
+  console.log("[v0] Created admin user:", admin.email);
 
   // Create site settings
   const siteSettings = await prisma.siteSettings.upsert({
@@ -29,10 +29,11 @@ async function main() {
       siteName: "Dr. Anup Ingle",
       siteTagline: "Academic Portfolio",
       metaTitle: "Dr. Anup Ingle - Academic Portfolio",
-      metaDescription: "Academic portfolio showcasing research, publications, and teaching experience",
+      metaDescription:
+        "Academic portfolio showcasing research, publications, and teaching experience",
     },
-  })
-  console.log("[v0] Created site settings")
+  });
+  console.log("[v0] Created site settings");
 
   // Create navigation items
   const navItems = [
@@ -42,7 +43,7 @@ async function main() {
     { label: "Corporate", href: "#corporate", order: 4 },
     { label: "Testimonials", href: "#testimonials", order: 5 },
     { label: "Contact", href: "#contact", order: 6 },
-  ]
+  ];
 
   for (const item of navItems) {
     await prisma.navItem.upsert({
@@ -52,9 +53,9 @@ async function main() {
         id: item.label.toLowerCase(),
         ...item,
       },
-    })
+    });
   }
-  console.log("[v0] Created navigation items")
+  console.log("[v0] Created navigation items");
 
   // Create hero section
   const hero = await prisma.heroSection.upsert({
@@ -69,8 +70,8 @@ async function main() {
       ctaText: "View Portfolio",
       ctaLink: "#portfolio",
     },
-  })
-  console.log("[v0] Created hero section")
+  });
+  console.log("[v0] Created hero section");
 
   // Create about section
   const about = await prisma.aboutSection.upsert({
@@ -82,15 +83,16 @@ async function main() {
       description:
         "With over a decade of experience in academia, I am committed to fostering innovation and excellence in research and teaching.",
     },
-  })
-  console.log("[v0] Created about section")
+  });
+  console.log("[v0] Created about section");
 
   // Create sample timeline items
   const timelineItems = [
     {
       year: "2020-Present",
       title: "Associate Professor",
-      description: "Leading research initiatives and mentoring graduate students",
+      description:
+        "Leading research initiatives and mentoring graduate students",
       order: 1,
     },
     {
@@ -105,12 +107,12 @@ async function main() {
       description: "Conducted advanced research in machine learning",
       order: 3,
     },
-  ]
+  ];
 
   for (const item of timelineItems) {
-    await prisma.timelineItem.create({ data: item })
+    await prisma.timelineItem.create({ data: item });
   }
-  console.log("[v0] Created timeline items")
+  console.log("[v0] Created timeline items");
 
   // Create sample stats
   const stats = [
@@ -118,23 +120,24 @@ async function main() {
     { label: "Citations", value: "1000+", order: 2 },
     { label: "Students Mentored", value: "100+", order: 3 },
     { label: "Years Experience", value: "15+", order: 4 },
-  ]
+  ];
 
   for (const stat of stats) {
-    await prisma.stat.create({ data: stat })
+    await prisma.stat.create({ data: stat });
   }
-  console.log("[v0] Created stats")
+  console.log("[v0] Created stats");
 
-  console.log("🌱 Seeding home page data...")
+  console.log("🌱 Seeding home page data...");
 
   // Seed Timeline Items
-  console.log("📅 Seeding timeline items...")
+  console.log("📅 Seeding timeline items...");
   await prisma.timelineItem.createMany({
     data: [
       {
         year: "2024",
         title: "Ph.D. in Electronics and Communication Engineering",
-        description: "Sri Satya Sai University of Technology & Medical Sciences, Sehore",
+        description:
+          "Sri Satya Sai University of Technology & Medical Sciences, Sehore",
         order: 1,
         isActive: true,
       },
@@ -148,15 +151,16 @@ async function main() {
       {
         year: "2024",
         title: "50+ Publications & 20+ Years Experience",
-        description: "Specializing in Computer Network Security, WSN, IoT, AI, and advanced computing.",
+        description:
+          "Specializing in Computer Network Security, WSN, IoT, AI, and advanced computing.",
         order: 3,
         isActive: true,
       },
     ],
-  })
+  });
 
   // Seed Stats
-  console.log("📊 Seeding stats...")
+  console.log("📊 Seeding stats...");
   await prisma.stat.createMany({
     data: [
       { label: "Publications", value: "50", order: 1, isActive: true },
@@ -164,14 +168,15 @@ async function main() {
       { label: "Students Mentored", value: "200", order: 3, isActive: true },
       { label: "Projects Guided", value: "50", order: 4, isActive: true },
     ],
-  })
+  });
 
   // Seed Internships
-  console.log("💼 Seeding internships...")
+  console.log("💼 Seeding internships...");
   await prisma.internship.createMany({
     data: [
       {
-        company: "Healthy Globe Smart Virtual Education Pvt. Ltd. (Padhega Bharat)",
+        company:
+          "Healthy Globe Smart Virtual Education Pvt. Ltd. (Padhega Bharat)",
         details: "05 Students (FYBTECH Students), Signed MOU",
         link: "https://www.linkedin.com/company/padhegabharat/?originalSubdomain=in",
         order: 1,
@@ -184,7 +189,8 @@ async function main() {
       },
       {
         company: "PrepBytes, Ghaziabad",
-        details: "Conducted Online workshop on Competitive Coding for FYBTECH Students",
+        details:
+          "Conducted Online workshop on Competitive Coding for FYBTECH Students",
         link: "https://www.prepbytes.com/",
         order: 3,
       },
@@ -196,7 +202,8 @@ async function main() {
       },
       {
         company: "Optimum Data Analytics (ODA), Pune",
-        details: "Signed MOU, 20 Students (SYBTECH Students), Completed 4 Industrial Projects",
+        details:
+          "Signed MOU, 20 Students (SYBTECH Students), Completed 4 Industrial Projects",
         link: "https://optimumdataanalytics.com/",
         order: 5,
       },
@@ -208,7 +215,8 @@ async function main() {
       },
       {
         company: "RIMOTE Private Limited, Singapore",
-        details: "06 Students (Final Year), 02 Students (Third Year), Signed MOU",
+        details:
+          "06 Students (Final Year), 02 Students (Third Year), Signed MOU",
         link: "",
         order: 7,
       },
@@ -238,50 +246,86 @@ async function main() {
       },
       {
         company: "Intenics Private Limited, Jabalpur",
-        details: "03 Students (FYBTECH Students), Product Development under Internship – 01 Student",
+        details:
+          "03 Students (FYBTECH Students), Product Development under Internship – 01 Student",
         link: "https://intenics.in/",
         order: 12,
       },
     ],
-  })
+  });
 
   // Seed Industry Visits
-  console.log("🏭 Seeding industry visits...")
+  console.log("🏭 Seeding industry visits...");
   await prisma.industryVisit.createMany({
     data: [
       { name: "Mag Power, Pune", link: "https://magpowerpune.com/", order: 1 },
-      { name: "Revogreen Technologies Pvt. Ltd., Pune", link: "https://revogreen.in/", order: 2 },
-      { name: "Halliburton, Pune", link: "https://www.halliburton.com/", order: 3 },
+      {
+        name: "Revogreen Technologies Pvt. Ltd., Pune",
+        link: "https://revogreen.in/",
+        order: 2,
+      },
+      {
+        name: "Halliburton, Pune",
+        link: "https://www.halliburton.com/",
+        order: 3,
+      },
       { name: "H. B. Fuller", link: "https://www.hbfuller.com/", order: 4 },
-      { name: "Intenics Private Limited, Jabalpur", link: "https://intenics.in/", order: 5 },
+      {
+        name: "Intenics Private Limited, Jabalpur",
+        link: "https://intenics.in/",
+        order: 5,
+      },
     ],
-  })
+  });
 
   // Seed Research Interests
-  console.log("🔬 Seeding research interests...")
+  console.log("🔬 Seeding research interests...");
   await prisma.researchInterest.createMany({
     data: [
-      { interest: "Intrusion Detection and Prevention Systems (IDS/IPS) using tools such as Snort", order: 1 },
+      {
+        interest:
+          "Intrusion Detection and Prevention Systems (IDS/IPS) using tools such as Snort",
+        order: 1,
+      },
       {
         interest:
           "Detection and mitigation of Denial of Service (DoS) attacks (ICMP, UDP, TCP SYN, IP Spoofing, ARP Poisoning)",
         order: 2,
       },
-      { interest: "Offline and Online Solutions for Network Attack Prevention", order: 3 },
-      { interest: "Data Mining Techniques (using Weka) for Network and Cloud Security", order: 4 },
-      { interest: "Routing Protocols and Router Configuration for Secure Communication", order: 5 },
-      { interest: "Design and Development of Hardware Firewalls for Comprehensive Network Protection", order: 6 },
-      { interest: "IoT-based Smart City Applications with Cloud Computing Integration", order: 7 },
+      {
+        interest: "Offline and Online Solutions for Network Attack Prevention",
+        order: 3,
+      },
+      {
+        interest:
+          "Data Mining Techniques (using Weka) for Network and Cloud Security",
+        order: 4,
+      },
+      {
+        interest:
+          "Routing Protocols and Router Configuration for Secure Communication",
+        order: 5,
+      },
+      {
+        interest:
+          "Design and Development of Hardware Firewalls for Comprehensive Network Protection",
+        order: 6,
+      },
+      {
+        interest:
+          "IoT-based Smart City Applications with Cloud Computing Integration",
+        order: 7,
+      },
       {
         interest:
           "Application of Artificial Intelligence, Machine Learning, and Deep Learning (Python-based) for Network Security and IoT Solutions",
         order: 8,
       },
     ],
-  })
+  });
 
   // Seed Teaching Interests
-  console.log("📚 Seeding teaching interests...")
+  console.log("📚 Seeding teaching interests...");
   await prisma.teachingInterest.createMany({
     data: [
       { interest: "Computer Networks", order: 1 },
@@ -289,26 +333,36 @@ async function main() {
       { interest: "Management Information System", order: 3 },
       { interest: "Computer Networks and Security", order: 4 },
       { interest: "Mobile Communication", order: 5 },
-      { interest: "Computer Fundamentals/Programming (C, C++, Embedded C)", order: 6 },
+      {
+        interest: "Computer Fundamentals/Programming (C, C++, Embedded C)",
+        order: 6,
+      },
       { interest: "Data Structure and Algorithm", order: 7 },
     ],
-  })
+  });
 
   // Seed Area of Interests
-  console.log("🎯 Seeding area of interests...")
+  console.log("🎯 Seeding area of interests...");
   await prisma.areaOfInterest.createMany({
     data: [
       { interest: "Computer Networks and Security", order: 1 },
       { interest: "Data Communication and Networking", order: 2 },
       { interest: "Programming Languages (C, C++, Python)", order: 3 },
-      { interest: "Internet of Things (IoT) and Smart City Applications", order: 4 },
+      {
+        interest: "Internet of Things (IoT) and Smart City Applications",
+        order: 4,
+      },
       { interest: "Cloud Computing", order: 5 },
-      { interest: "Educational Technology and Interactive Online Learning Platforms", order: 6 },
+      {
+        interest:
+          "Educational Technology and Interactive Online Learning Platforms",
+        order: 6,
+      },
     ],
-  })
+  });
 
   // Seed Professional Info
-  console.log("👔 Seeding professional info...")
+  console.log("👔 Seeding professional info...");
   await prisma.professionalInfo.createMany({
     data: [
       {
@@ -336,10 +390,10 @@ async function main() {
         order: 4,
       },
     ],
-  })
+  });
 
   // Seed Skill Sections
-  console.log("💻 Seeding skill sections...")
+  console.log("💻 Seeding skill sections...");
   await prisma.skillSection.createMany({
     data: [
       {
@@ -377,14 +431,18 @@ async function main() {
         title: "Other Technical Skills",
         icon: "FiCpu",
         color: "bg-amber-50 border-amber-200",
-        items: ["Website Development", "IoT System Design", "Machine Learning Implementation"],
+        items: [
+          "Website Development",
+          "IoT System Design",
+          "Machine Learning Implementation",
+        ],
         order: 4,
       },
     ],
-  })
+  });
 
   // Seed Courses Taught
-  console.log("📖 Seeding courses taught...")
+  console.log("📖 Seeding courses taught...");
   await prisma.courseTaught.createMany({
     data: [
       { course: "Computer Networks and Security", order: 1 },
@@ -393,13 +451,16 @@ async function main() {
       { course: "Object Oriented Programming", order: 4 },
       { course: "Operating System", order: 5 },
       { course: "Mobile Communication", order: 6 },
-      { course: "Computer Fundamentals/Programming (C, C++, Embedded C)", order: 7 },
+      {
+        course: "Computer Fundamentals/Programming (C, C++, Embedded C)",
+        order: 7,
+      },
       { course: "Data Structure and Algorithm", order: 8 },
     ],
-  })
+  });
 
   // Seed Project Guidance
-  console.log("🎓 Seeding project guidance...")
+  console.log("🎓 Seeding project guidance...");
   await prisma.projectGuidance.createMany({
     data: [
       { guidance: "BE/BTech Final Year Projects: 30+", order: 1 },
@@ -407,10 +468,10 @@ async function main() {
       { guidance: "BE/BTech Second Year Projects: 20+", order: 3 },
       { guidance: "FY BTech Project-Based Learning: 700+", order: 4 },
     ],
-  })
+  });
 
   // Seed Certifications
-  console.log("🏆 Seeding certifications...")
+  console.log("🏆 Seeding certifications...");
   await prisma.certification.createMany({
     data: [
       {
@@ -440,7 +501,8 @@ async function main() {
         name: "Programming for Everybody (Getting Started with Python)",
         provider: "Coursera",
         issueDate: "2020",
-        credentialUrl: "https://www.coursera.org/account/accomplishments/certificate/KXR9P4WEUAVL",
+        credentialUrl:
+          "https://www.coursera.org/account/accomplishments/certificate/KXR9P4WEUAVL",
         order: 4,
       },
       {
@@ -451,13 +513,12 @@ async function main() {
         order: 5,
       },
     ],
-  })
+  });
 
   // Seed Talks
 
-
   // Seed Testimonials
-  console.log("💬 Seeding testimonials...")
+  console.log("💬 Seeding testimonials...");
   await prisma.testimonial.createMany({
     data: [
       // Industry testimonials
@@ -474,7 +535,8 @@ async function main() {
         name: "Dr Mayur Desai",
         role: "Director",
         company: "Creator Research Pvt Ltd",
-        content: "Dr Anup sir is very friendly, dedicated to his work. Supported and motivated person.",
+        content:
+          "Dr Anup sir is very friendly, dedicated to his work. Supported and motivated person.",
         category: "industry",
         order: 2,
       },
@@ -597,13 +659,13 @@ async function main() {
         order: 8,
       },
     ],
-  })
+  });
 
-  console.log("✅ Home page data seeded successfully!")
-  console.log("[v0] Database seed completed successfully!")
-  console.log("🌱 Starting comprehensive database seed...")
+  console.log("✅ Home page data seeded successfully!");
+  console.log("[v0] Database seed completed successfully!");
+  console.log("🌱 Starting comprehensive database seed...");
 
-  console.log("📝 Seeding Professional Info...")
+  console.log("📝 Seeding Professional Info...");
   await prisma.professionalInfo.createMany({
     data: [
       {
@@ -631,17 +693,17 @@ async function main() {
         order: 4,
       },
     ],
-  })
+  });
 
-  console.log("📝 Seeding Professional Summary...")
+  console.log("📝 Seeding Professional Summary...");
   await prisma.professionalSummary.create({
     data: {
       summary:
         "Dr. Anup Ingle is an accomplished academic and researcher with expertise in computer networks, security, and IoT. His research focuses on intrusion detection systems, DDoS attack mitigation, and network anomaly detection. With extensive experience in both academia and industry, he has published numerous papers in reputed journals and conferences, authored several textbooks, and actively contributes to student development through industry collaborations and internships.",
     },
-  })
+  });
 
-  console.log("🎯 Seeding Area of Interests...")
+  console.log("🎯 Seeding Area of Interests...");
   const areaOfInterests = [
     "Computer Networks and Security",
     "Data Communication and Networking",
@@ -649,15 +711,15 @@ async function main() {
     "Internet of Things (IoT) and Smart City Applications",
     "Cloud Computing",
     "Educational Technology and Interactive Online Learning Platforms",
-  ]
+  ];
   await prisma.areaOfInterest.createMany({
     data: areaOfInterests.map((interest, index) => ({
       interest,
       order: index + 1,
     })),
-  })
+  });
 
-  console.log("🔬 Seeding Research Interests...")
+  console.log("🔬 Seeding Research Interests...");
   const researchInterests = [
     "Intrusion Detection and Prevention Systems (IDS/IPS) using tools such as Snort",
     "Detection and mitigation of Denial of Service (DoS) attacks (ICMP, UDP, TCP SYN, IP Spoofing, ARP Poisoning)",
@@ -667,23 +729,24 @@ async function main() {
     "Design and Development of Hardware Firewalls for Comprehensive Network Protection",
     "IoT-based Smart City Applications with Cloud Computing Integration",
     "Application of Artificial Intelligence, Machine Learning, and Deep Learning (Python-based) for Network Security and IoT Solutions",
-  ]
+  ];
   await prisma.researchInterest.createMany({
     data: researchInterests.map((interest, index) => ({
       interest,
       order: index + 1,
     })),
-  })
+  });
 
-  console.log("🎯 Seeding Ultimate Goal...")
+  console.log("🎯 Seeding Ultimate Goal...");
   await prisma.ultimateGoal.create({
     data: {
       title: "Long-Term Vision",
-      description: "To Design Hardware Firewall to prevent networks from various attacks.",
+      description:
+        "To Design Hardware Firewall to prevent networks from various attacks.",
     },
-  })
+  });
 
-  console.log("💻 Seeding Skill Sections...")
+  console.log("💻 Seeding Skill Sections...");
   await prisma.skillSection.createMany({
     data: [
       {
@@ -721,13 +784,17 @@ async function main() {
         title: "Other Technical Skills",
         icon: "FiCpu",
         color: "bg-amber-50 border-amber-200",
-        items: ["Website Development", "IoT System Design", "Machine Learning Implementation"],
+        items: [
+          "Website Development",
+          "IoT System Design",
+          "Machine Learning Implementation",
+        ],
         order: 4,
       },
     ],
-  })
+  });
 
-  console.log("📚 Seeding Courses Taught...")
+  console.log("📚 Seeding Courses Taught...");
   const coursesTaught = [
     "Computer Networks and Security",
     "Telecommunication Switching and Systems",
@@ -737,29 +804,29 @@ async function main() {
     "Mobile Communication",
     "Computer Fundamentals/Programming (C, C++, Embedded C)",
     "Data Structure and Algorithm",
-  ]
+  ];
   await prisma.courseTaught.createMany({
     data: coursesTaught.map((course, index) => ({
       course,
       order: index + 1,
     })),
-  })
+  });
 
-  console.log("👨‍🎓 Seeding Project Guidance...")
+  console.log("👨‍🎓 Seeding Project Guidance...");
   const projectGuidance = [
     "BE/BTech Final Year Projects: 30+",
     "BE/BTech Third Year Projects: 20+",
     "BE/BTech Second Year Projects: 20+",
     "FY BTech Project-Based Learning: 700+",
-  ]
+  ];
   await prisma.projectGuidance.createMany({
     data: projectGuidance.map((guidance, index) => ({
       guidance,
       order: index + 1,
     })),
-  })
+  });
 
-  console.log("🏆 Seeding Certifications...")
+  console.log("🏆 Seeding Certifications...");
   await prisma.certification.createMany({
     data: [
       {
@@ -808,9 +875,9 @@ async function main() {
         order: 5,
       },
     ],
-  })
+  });
 
-  console.log("🎤 Seeding Invited Talks...")
+  console.log("🎤 Seeding Invited Talks...");
   await prisma.talk.createMany({
     data: [
       {
@@ -826,9 +893,9 @@ async function main() {
         order: 2,
       },
     ],
-  })
+  });
 
-  console.log("🛠️ Seeding Project Skills...")
+  console.log("🛠️ Seeding Project Skills...");
   const projectSkills = [
     "IoT & Embedded Systems",
     "AI & Machine Learning",
@@ -838,20 +905,21 @@ async function main() {
     "Edge & Cloud Computing",
     "Academic Research",
     "Technical Mentoring",
-  ]
+  ];
   await prisma.projectSkill.createMany({
     data: projectSkills.map((skill, index) => ({
       skill,
       order: index + 1,
     })),
-  })
+  });
 
-  console.log("🚀 Seeding Projects...")
+  console.log("🚀 Seeding Projects...");
   await prisma.project.createMany({
     data: [
       {
         title: "Smart IoT Security System",
-        shortDescription: "An AI-powered intrusion prevention system for IoT devices in smart cities.",
+        shortDescription:
+          "An AI-powered intrusion prevention system for IoT devices in smart cities.",
         type: "Industry Sponsored",
         typeCompany: "TechSecure Pvt Ltd",
         typeUrl: "https://techsecure.com",
@@ -860,27 +928,34 @@ async function main() {
           "This collaboration provided us with groundbreaking solutions in IoT security. – CTO, TechSecure Pvt Ltd",
         ytLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         linkedinPost: "https://www.linkedin.com/posts/example",
-        skills: ["IoT & Embedded Systems", "Cybersecurity", "AI & Machine Learning"],
+        skills: [
+          "IoT & Embedded Systems",
+          "Cybersecurity",
+          "AI & Machine Learning",
+        ],
         order: 1,
       },
       {
         title: "Network Monitoring Dashboard",
-        shortDescription: "In-house project developing real-time visualization tools for network administrators.",
+        shortDescription:
+          "In-house project developing real-time visualization tools for network administrators.",
         type: "In-House",
         image: "/images/dashboard.jpg",
-        testimonial: "This tool greatly simplified our monitoring process and reduced downtime. – Internal Team",
+        testimonial:
+          "This tool greatly simplified our monitoring process and reduced downtime. – Internal Team",
         skills: ["Edge & Cloud Computing", "Cybersecurity"],
         order: 2,
       },
     ],
-  })
+  });
 
-  console.log("📄 Seeding Journal Publications...")
+  console.log("📄 Seeding Journal Publications...");
   const journals = [
     {
       title: "Intrusion Detection for ICMP-Flood Attack",
       authors: "Mohnish Awade, A. W. Ingle",
-      journal: "International Journal of Research in Computer Science & Information Technology (IJRCSIT)",
+      journal:
+        "International Journal of Research in Computer Science & Information Technology (IJRCSIT)",
       details: "ISSN: 2319-5010, Vol 1, Issue 1(A), 2013",
       link: "https://ijrcsit.com/",
       type: "international",
@@ -888,74 +963,81 @@ async function main() {
     {
       title: "Intrusion Detection for TCP-SYN Flood Attack",
       authors: "Mohnish Awade, A. W. Ingle",
-      journal: "International Journal of Advanced Research in Computer Science (IJARCS)",
+      journal:
+        "International Journal of Advanced Research in Computer Science (IJARCS)",
       details: "Vol 4, No 5, 2013",
       link: "https://ijarcs.info/index.php/Ijarcs/issue/view/47",
       type: "international",
     },
     // Add more journals here (truncated for brevity)
-  ]
+  ];
 
   for (const journal of journals) {
-    await prisma.journal.create({ data: journal })
+    await prisma.journal.create({ data: journal });
   }
 
-  console.log("📊 Seeding Conference Publications...")
+  console.log("📊 Seeding Conference Publications...");
   const conferences = [
     {
       title: "Intrusion Detection for ICMP-Flood Attack",
       authors: "A. W. Ingle, Mohnish Awade",
-      event: "2nd National Conference on Computer Communication and Information Technology (NC3IT-2013)",
-      details: "Sinhgad Institute of Computer Science, Pandharpur, India, 15-16 Feb 2013",
+      event:
+        "2nd National Conference on Computer Communication and Information Technology (NC3IT-2013)",
+      details:
+        "Sinhgad Institute of Computer Science, Pandharpur, India, 15-16 Feb 2013",
       link: "",
       type: "national",
     },
     // Add more conferences here (truncated for brevity)
-  ]
+  ];
 
   for (const conference of conferences) {
-    await prisma.conference.create({ data: conference })
+    await prisma.conference.create({ data: conference });
   }
 
-  console.log("📚 Seeding Books...")
+  console.log("📚 Seeding Books...");
   const books = [
     {
       title: "Internet of Things",
-      course: "Second Year Degree Course in ARTIFICIAL INTELLIGENCE & DATA SCIENCE (SPPU)",
+      course:
+        "Second Year Degree Course in ARTIFICIAL INTELLIGENCE & DATA SCIENCE (SPPU)",
       authors: "Dr. Anup Ingle",
       publisher: "Nirali Publication",
       link: "https://www.flipkart.com/internet-things-second-year-sy-degree-artifical-intelligence-data-science-semester-4/p/itmacd4162afea0c",
     },
     // Add more books here (truncated for brevity)
-  ]
+  ];
 
   for (const book of books) {
-    await prisma.book.create({ data: book })
+    await prisma.book.create({ data: book });
   }
 
-  console.log("📖 Seeding Book Chapters...")
+  console.log("📖 Seeding Book Chapters...");
   await prisma.bookChapter.createMany({
     data: [
       {
         year: "2025",
         chapterTitle: "Impacts of Digital Technologies Across Generations",
-        bookTitle: "Bridging Academia and Industry Through Cloud Integration in Education",
+        bookTitle:
+          "Bridging Academia and Industry Through Cloud Integration in Education",
         doi: "10.4018/979-8-3693-6705-6.ch001",
         doiLink: "https://doi.org/10.4018/979-8-3693-6705-6.ch001",
         isbn: "9798369367070, 9798369367056",
         coAuthors: "K.P. Kshirsagar; A. Ingle",
-        scopusLink: "https://www.scopus.com/record/display.uri?eid=2-s2.0-85218055676",
+        scopusLink:
+          "https://www.scopus.com/record/display.uri?eid=2-s2.0-85218055676",
         order: 1,
       },
       // Add more book chapters here (truncated for brevity)
     ],
-  })
+  });
 
-  console.log("💡 Seeding Patents...")
+  console.log("💡 Seeding Patents...");
   await prisma.patent.createMany({
     data: [
       {
-        title: "DESIGN AND DEVELOPMENT OF AN ULTRASONIC VIBRATION-ASSISTED TURNING TOOLONG FIXTURE AND HARD MACHINE",
+        title:
+          "DESIGN AND DEVELOPMENT OF AN ULTRASONIC VIBRATION-ASSISTED TURNING TOOLONG FIXTURE AND HARD MACHINE",
         inventors: "Dr. Anup Ingle et al.",
         applicationNumber: "202221004356",
         publishedDate: "09.12.2022",
@@ -964,15 +1046,15 @@ async function main() {
         order: 1,
       },
     ],
-  })
-  console.log("✅ Database seeded successfully!")
+  });
+  console.log("✅ Database seeded successfully!");
 }
 
 main()
   .catch((e) => {
-    console.error("[v0] Error seeding database:", e)
-    process.exit(1)
+    console.error("[v0] Error seeding database:", e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  })
+    await prisma.$disconnect();
+  });
