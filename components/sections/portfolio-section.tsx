@@ -239,8 +239,8 @@ export function PortfolioSection({
     },
     {
       value: "professional-competencies",
-      label: "Skills",
-      icon: <Briefcase className="w-3 h-3 sm:w-4 sm:h-4" />,
+      label: "Professional Competencies",
+      icon: <Briefcase className="w-12 h-3 sm:w-12 sm:h-4" />,
     },
     {
       value: "teaching",
@@ -254,7 +254,7 @@ export function PortfolioSection({
     },
     {
       value: "talks",
-      label: "Talks",
+      label: "Invited Talks",
       icon: <Mic2 className="w-3 h-3 sm:w-4 sm:h-4" />,
     },
     {
@@ -279,7 +279,7 @@ export function PortfolioSection({
     },
     {
       value: "patents",
-      label: "IP",
+      label: "Intellectual Property",
       icon: <Lightbulb className="w-3 h-3 sm:w-4 sm:h-4" />,
     },
   ];
@@ -295,25 +295,17 @@ export function PortfolioSection({
         </h2>
 
         <Tabs defaultValue="overview" className=" max-w-5xl mx-auto">
-          <TabsList className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-10 lg:mb-18 w-full">
+          <TabsList className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-8 sm:mb-10 lg:mb-24 w-full">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="
-        flex items-center justify-center gap-2 sm:gap-3
-        py-2 sm:py-3 lg:py-3.5
-        text-sm sm:text-base lg:text-lg font-semibold
-        bg-white text-amber-700 border-2 border-amber-300
-        rounded-lg sm:rounded-2xl shadow-sm
-        transition-all duration-300
-        hover:bg-amber-100 hover:text-amber-900 hover:shadow-md
-        data-[state=active]:bg-amber-700
-        data-[state=active]:text-white
-        data-[state=active]:border-amber-700
-        data-[state=active]:shadow-lg
-        text-center
-        w-32 sm:w-36 lg:w-40
+                className="w-full rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 
+  shadow-sm hover:shadow-xl transition-all duration-300 
+  bg-gradient-to-r from-amber-100 via-amber-200 to-white  dark:from-slate-800 dark:via-slate-900 dark:to-slate-900
+  p-4 sm:p-5 lg:p-6
+  hover:-translate-y-1 hover:scale-105
+  hover:bg-gradient-to-r hover:from-amber-200 hover:via-amber-100 hover:to-white
       "
               >
                 {tab.icon}
@@ -325,7 +317,7 @@ export function PortfolioSection({
           {/* Overview - Interests */}
           <TabsContent
             value="overview"
-            className="space-y-8 sm:space-y-10 lg:space-y-12 border-t-4 border-t-amber-700 rounded-tl-lg pl-3 sm:pl-4 lg:pl-6 pt-4 sm:pt-5 lg:pt-6"
+            className="space-y-12 sm:space-y-10 lg:space-y-12 border-t-4 border-t-amber-700 rounded-tl-lg pl-3 sm:pl-4 lg:pl-6 pt-4 sm:pt-5 lg:pt-6"
           >
             {interests.length > 0 && (
               <section
