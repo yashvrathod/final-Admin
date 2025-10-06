@@ -5,8 +5,10 @@ import { PortfolioSection } from "@/components/sections/portfolio-section";
 import { CorporateSection } from "@/components/sections/corporate-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { ContactSection } from "@/components/sections/contact-section";
-import { Navbar } from "@/components/navbar";
+// import { Navbar } from "@/components/navbar";
 import Footer from "@/components/footer";
+import { Navbar } from "@/components/NavbarWrapper";
+// import NavbarWrapper from "@/components/NavbarWrapper";
 
 async function getPageData() {
   const [
@@ -157,10 +159,8 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
-      <Navbar
-        items={data.navItems}
-        siteName={data.siteSettings?.siteName || "Academic Portfolio"}
-      />
+      {/* <NavbarWrapper siteName={data.siteSettings?.siteName || "Portfolio"} /> */}
+      <Navbar siteName={data.siteSettings?.siteName || "Portfolio"} items={data.navItems} />
       <main>
         {data.hero && <HeroSection data={data.hero} />}
         {data.about && (
