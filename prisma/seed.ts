@@ -2,125 +2,70 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const internships = [
+const bookChapters = [
   {
-    company: "Healthy Globe Smart Virtual Education Pvt. Ltd. (Padhega Bharat)",
-    description: "05 Students (FYBTECH Students), Signed MOU",
-    link: "https://www.linkedin.com/company/padhegabharat/?originalSubdomain=in",
+    year: "2025",
+    chapterTitle: "Impacts of Digital Technologies Across Generations",
+    bookTitle:
+      "Bridging Academia and Industry Through Cloud Integration in Education",
+    doi: "10.4018/979-8-3693-6705-6.ch001",
+    doiLink: "https://doi.org/10.4018/979-8-3693-6705-6.ch001",
+    isbn: "9798369367070, 9798369367056",
+    coAuthors: "K.P. Kshirsagar; A. Ingle",
+    scopusLink:
+      "https://www.scopus.com/record/display.uri?eid=2-s2.0-85218055676",
+    crossrefLink: "",
   },
   {
-    company: "Deep Learning Research & Development (DLRD)",
-    description: "11 Students (FYBTECH/SYBTECH Students)",
-    link: "",
+    year: "2025",
+    chapterTitle:
+      "Human-centric IT Management: Enhancing Employee Productivity and Satisfaction",
+    bookTitle:
+      "Tech-Driven Strategies: Leveraging Information Technology in Business Management",
+    doi: "— (no Crossref DOI listed yet)",
+    doiLink: "",
+    isbn: "9798895303986, 9798895302606",
+    coAuthors: "O. Bagaria; S. Mohammed; R. Kamalraj; A. Ingle",
+    scopusLink: "https://www.scopus.com/pages/publications/86000193063",
+    crossrefLink: "",
   },
   {
-    company: "PrepBytes, Ghaziabad",
-    description:
-      "Conducted Online workshop on Competitive Coding for FYBTECH Students",
-    link: "https://www.prepbytes.com/",
-  },
-  {
-    company: "PROGO",
-    description: "01 Student (SYBTECH Student)",
-    link: "",
-  },
-  {
-    company: "Optimum Data Analytics (ODA), Pune",
-    description:
-      "Signed MOU, 20 Students (SYBTECH Students), Completed 4 Industrial Projects",
-    link: "https://optimumdataanalytics.com/",
-  },
-  {
-    company: "ASIC Networking Services Pvt. Ltd., Pune",
-    description: "Signed MOU",
-    link: "https://www.linkedin.com/company/asic-networking-services-pte-ltd/?originalSubdomain=in",
-  },
-  {
-    company: "RIMOTE Private Limited, Singapore",
-    description:
-      "06 Students (Final Year), 02 Students (Third Year), Signed MOU",
-    link: "",
-  },
-  {
-    company: "Code Gurukul, Pune",
-    description: "40+ Students (Final Year/SYBTECH/TYBTECH)",
-    link: "https://www.linkedin.com/company/code-gurukul/",
-  },
-  {
-    company: "OXVSYS, Pune",
-    description: "02 Students",
-    link: "https://oxvsys.com/",
-  },
-  {
-    company: "INNOTEK IT SYSTEMS LLP",
-    description: "40 Students (FYBTECH Students)",
-    link: "https://innoteksystem.com/",
-  },
-  {
-    company: "CREATOR RESEARCH Pvt. Ltd.",
-    description: "04 Students (FYBTECH Students)",
-    link: "https://creatorresearch.com/",
-  },
-  {
-    company: "Intenics Private Limited, Jabalpur",
-    description:
-      "03 Students (FYBTECH Students), Product Development under Internship – 01 Student",
-    link: "https://intenics.in/",
-  },
-];
-
-const industryVisits = [
-  { company: "Mag Power, Pune", link: "https://magpowerpune.com/" },
-  {
-    company: "Revogreen Technologies Pvt. Ltd., Pune",
-    link: "https://revogreen.in/",
-  },
-  { company: "Halliburton, Pune", link: "https://www.halliburton.com/" },
-  { company: "H. B. Fuller", link: "https://www.hbfuller.com/" },
-  {
-    company: "Intenics Private Limited, Jabalpur",
-    link: "https://intenics.in/",
+    year: "2025",
+    chapterTitle:
+      "Empowering Individuals with Disabilities: The Role of Mobile Health Apps in Enhancing Accessibility and Health Outcomes",
+    bookTitle:
+      "Modern Digital Approaches to Care Technologies for Individuals with Disabilities",
+    doi: "10.4018/979-8-3693-7560-0.ch004",
+    doiLink: "https://doi.org/10.4018/979-8-3693-7560-0.ch004",
+    isbn: "9798369375600, 9798369375624",
+    coAuthors: "A.W. Ingle; K.P. Kshirsagar; P.G. Gawande",
+    scopusLink: "https://www.scopus.com/pages/publications/105005127645",
+    crossrefLink: "https://doi.org/10.4018/979-8-3693-7560-0.ch004",
   },
 ];
 
 async function main() {
-  // Seed internships
-  for (let i = 0; i < internships.length; i++) {
-    const internship = internships[i];
-    await prisma.corporateConnection.create({
+  for (let i = 0; i < bookChapters.length; i++) {
+    const chapter = bookChapters[i];
+    await prisma.bookChapter.create({
       data: {
-        company: internship.company,
-        description: internship.description,
-        logoUrl: internship.link || null,
+        year: chapter.year,
+        chapterTitle: chapter.chapterTitle,
+        bookTitle: chapter.bookTitle,
+        doi: chapter.doi,
+        doiLink: chapter.doiLink,
+        isbn: chapter.isbn,
+        coAuthors: chapter.coAuthors,
+        scopusLink: chapter.scopusLink,
+        crossrefLink: chapter.crossrefLink,
         order: i + 1,
-        isActive: true,
       },
     });
   }
 
-  // Seed industry visits
-  const offset = internships.length;
-  for (let i = 0; i < industryVisits.length; i++) {
-    const visit = industryVisits[i];
-    await prisma.corporateConnection.create({
-      data: {
-        company: visit.company,
-        description: "Industry Visit",
-        logoUrl: visit.link || null,
-        order: offset + i + 1,
-        isActive: true,
-      },
-    });
-  }
-
-  console.log("✅ Corporate connections seeded successfully!");
+  console.log("All book chapters seeded successfully!");
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch((e) => console.error(e))
+  .finally(() => prisma.$disconnect());

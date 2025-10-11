@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Typewriter } from "react-simple-typewriter";
+import VisitorCounter from "../VisitorCounter";
 // import VisitorCounter from "@/components/VisitorCounter";
 
 export function HeroSection() {
@@ -35,7 +36,7 @@ export function HeroSection() {
             </p>
             <div className="p-4">
               {/* VisitorCounter */}
-              {/* <VisitorCounter /> */}
+              <VisitorCounter />
             </div>
           </div>
         </div>

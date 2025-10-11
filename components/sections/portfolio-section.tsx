@@ -330,6 +330,77 @@ export function PortfolioSection({
       text: "FLOW-BASED PATTERN MATCHING APPROACH TO MITIGATE THE DENIAL OF SERVICE ATTACK ON COMMUNICATION NETWORK ",
     },
   ];
+  const InterestCard = ({ icon: Icon, title, items }) => (
+    <div className="bg-white rounded-xl shadow-sm border border-amber-100 p-6 hover:shadow-md transition">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 flex items-center justify-center bg-amber-100 rounded-full text-amber-800 shadow">
+          <Icon size={20} />
+        </div>
+        <h3 className="font-semibold text-lg text-amber-900">{title}</h3>
+      </div>
+      <ul className="space-y-2 text-stone-700">
+        {items.map((item, index) => (
+          <li key={item.id || index} className="flex items-start gap-2">
+            <span className="text-amber-700 mt-1">•</span>
+            <span>{item.interest}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
+  const CombinedInterestCard = ({ areaOfInterests, researchInterests }) => (
+    <div className="bg-white rounded-xl shadow-sm border border-amber-100 p-6 hover:shadow-md transition space-y-8">
+      {/* Areas of Interest */}
+      {areaOfInterests.length > 0 && (
+        <InterestCard
+          icon={FiBookOpen}
+          title="Areas of Interest"
+          items={areaOfInterests}
+        />
+      )}
+
+      {/* Research Interests */}
+      {researchInterests.length > 0 && (
+        <InterestCard
+          icon={FiCpu}
+          title="Research Interests"
+          items={researchInterests}
+        />
+      )}
+
+      {/* Ultimate Goal */}
+      <SectionWrapper
+        title={
+          <span className="text-amber-900 text-2xl font-bold">
+            Ultimate Research Goal
+          </span>
+        }
+      >
+        <div className="bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 flex items-center justify-center bg-amber-600 text-white rounded-full shadow">
+              <FiTarget size={20} />
+            </div>
+            <h3 className="font-semibold text-lg text-amber-900">
+              {ultimateGoal[0]?.title || "Long-Term Vision"}
+            </h3>
+          </div>
+          <p className="text-stone-800 text-base leading-relaxed">
+            {ultimateGoal[0]?.description ? (
+              <>
+                <span className="font-semibold text-amber-800">
+                  {ultimateGoal[0].description}
+                </span>
+              </>
+            ) : (
+              "To achieve my long-term research objectives."
+            )}
+          </p>
+        </div>
+      </SectionWrapper>
+    </div>
+  );
 
   return (
     <section
@@ -429,101 +500,19 @@ export function PortfolioSection({
             value="interests"
             className="space-y-8 sm:space-y-10 lg:space-y-12"
           >
-            {/* Loop through all interest sections */}
-            {[
-              {
-                title: "Area of Interests",
-                items: areaOfInterest,
-                icon: FiBookOpen,
-              },
-              {
-                title: "Research Interests",
-                items: researchInterest,
-                icon: FiCpu,
-              },
-              { title: "Ultimate Goals", items: ultimateGoal, icon: FiTarget },
-            ].map(
-              (section) =>
-                section.items.length > 0 && (
-                  <section
-                    key={section.title}
-                    id={section.title.replace(/\s+/g, "-").toLowerCase()}
-                    className="space-y-8 sm:space-y-10 lg:space-y-12"
-                  >
-                    <h2 className="text-xl sm:text-2xl font-semibold border-l-4 border-l-amber-400 pl-2 sm:pl-3 text-amber-900">
-                      {section.title}
-                    </h2>
-
-                    <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
-                      {section.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition p-4 sm:p-5 lg:p-6 ${
-                            section.title === "Ultimate Goals"
-                              ? "col-span-full bg-gradient-to-r from-amber-50 to-yellow-100 border-amber-200"
-                              : ""
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 mb-3">
-                            <div
-                              className={`w-10 h-10 flex items-center justify-center rounded-full shadow ${
-                                section.title === "Ultimate Goals"
-                                  ? "bg-amber-600 text-white"
-                                  : "bg-amber-100 text-amber-800"
-                              }`}
-                            >
-                              <section.icon size={20} />
-                            </div>
-                            <h3
-                              className={`font-semibold text-lg text-amber-900 ${
-                                section.title === "Ultimate Goals"
-                                  ? "text-xl"
-                                  : ""
-                              }`}
-                            >
-                              {item.title || item.description}
-                            </h3>
-                          </div>
-
-                          {item.description &&
-                            section.title !== "Ultimate Goals" && (
-                              <>
-                                {item.description.includes(",") ? (
-                                  <ul className="space-y-1.5 sm:space-y-2 text-stone-700 text-sm sm:text-base list-none pl-4">
-                                    {item.description
-                                      .split(",")
-                                      .map((desc, idx) => (
-                                        <li
-                                          key={idx}
-                                          className="flex items-start gap-2"
-                                        >
-                                          <span className="text-amber-700 mt-1 flex-shrink-0">
-                                            •
-                                          </span>
-                                          <span>{desc.trim()}</span>
-                                        </li>
-                                      ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-stone-700 text-sm sm:text-base">
-                                    {item.description}
-                                  </p>
-                                )}
-                              </>
-                            )}
-
-                          {section.title === "Ultimate Goals" &&
-                            item.description && (
-                              <p className="text-stone-800 text-base leading-relaxed">
-                                {item.description}
-                              </p>
-                            )}
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )
-            )}
+            {/* Sections */}
+            <SectionWrapper
+              title={
+                <span className="text-amber-900 text-2xl font-bold">
+                  Interests & Goals
+                </span>
+              }
+            >
+              <CombinedInterestCard
+                areaOfInterests={areaOfInterest}
+                researchInterests={researchInterest}
+              />
+            </SectionWrapper>
           </TabsContent>
 
           {/* Professional Competencies */}
