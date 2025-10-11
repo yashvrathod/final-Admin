@@ -18,7 +18,9 @@ async function getPageData() {
     about,
     timeline,
     stats,
-    interests,
+    areaOfInterest,
+    researchInterest,
+    ultimateGoal,
     skills,
     skillsSections,
     teaching,
@@ -52,9 +54,17 @@ async function getPageData() {
       where: { isActive: true },
       orderBy: { order: "asc" },
     }),
-    prisma.academicInterest.findMany({
+    prisma.areaOfInterest.findMany({
       where: { isActive: true },
       orderBy: { order: "asc" },
+    }),
+    prisma.researchInterest.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+    }),
+    prisma.ultimateGoal.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: "asc" },
     }),
     prisma.skill.findMany({
       where: { isActive: true },
@@ -133,7 +143,10 @@ async function getPageData() {
     about,
     timeline,
     stats,
-    interests,
+    areaOfInterest,
+    researchInterest,
+    ultimateGoal,
+
     skills,
     skillsSections,
     teaching,
@@ -160,7 +173,10 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* <NavbarWrapper siteName={data.siteSettings?.siteName || "Portfolio"} /> */}
-      <Navbar siteName={data.siteSettings?.siteName || "Portfolio"} items={data.navItems} />
+      <Navbar
+        siteName={data.siteSettings?.siteName || "Portfolio"}
+        items={data.navItems}
+      />
       <main>
         {data.hero && <HeroSection data={data.hero} />}
         {data.about && (
@@ -171,7 +187,9 @@ export default async function HomePage() {
           />
         )}
         <PortfolioSection
-          interests={data.interests}
+          areaOfInterest={data.areaOfInterest}
+          researchInterest={data.researchInterest}
+          ultimateGoal={data.ultimateGoal}
           skills={data.skills}
           skillSections={data.skillsSections}
           teaching={data.teaching}

@@ -1,11 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { ReactNode } from "react";
 import {
   FaEnvelope,
   FaPhoneAlt,
   FaLinkedin,
   FaArrowRight,
+  FaGraduationCap,
+  FaLaptopCode,
+  FaLightbulb,
 } from "react-icons/fa";
 
 interface AboutData {
@@ -32,28 +36,51 @@ interface AboutSectionProps {
   stats: Stat[];
 }
 
-interface StatCardProps extends Stat {}
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  icon?: ReactNode;
+  base?: string;  // Tailwind color for bg/border
+  hover?: string; // Tailwind color for icon/label hover
+}
 
-const StatCard = ({ label, value, icon }: StatCardProps) => (
+const StatCard = ({
+  label,
+  value,
+  icon,
+  base = "yellow",
+  hover = "amber",
+}: StatCardProps) => (
   <motion.div
     whileInView={{ opacity: 1, y: 0 }}
     initial={{ opacity: 0, y: 20 }}
     viewport={{ once: true }}
-    className="bg-yellow-100 rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 border border-yellow-300 hover:shadow-xl hover:scale-105 transition-transform cursor-pointer relative"
+    className={`bg-${base}-100 rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 border border-${base}-300 hover:shadow-xl hover:scale-105 transition-transform cursor-pointer`}
   >
-    <div className="text-amber-700 text-3xl sm:text-4xl mb-4 sm:mb-5 flex justify-center">
+    <div
+      className={`text-${hover}-700 text-3xl sm:text-4xl mb-4 sm:mb-5 flex justify-center`}
+    >
       {icon}
     </div>
-    <div className="font-semibold text-stone-800 text-lg sm:text-xl mb-2 sm:mb-3 text-center">
+    <div
+      className={`font-bold text-stone-800 text-lg sm:text-xl mb-2 sm:mb-3 text-center`}
+    >
       {value}
     </div>
-    <div className="text-yellow-900 text-sm sm:text-base leading-relaxed text-center">
+    <div
+      className={`font-semibold text-${hover}-900 text-sm sm:text-base leading-relaxed text-center`}
+    >
       {label}
     </div>
   </motion.div>
 );
 
 export function AboutSection({ data, timeline, stats }: AboutSectionProps) {
+  const timelineWithIcons = timeline.map((item, idx) => {
+    // You can rotate icons or assign based on index
+    const icons = [<FaGraduationCap />, <FaLaptopCode />, <FaLightbulb />];
+    return { ...item, icon: icons[idx % icons.length] };
+  });
   return (
     <section
       id="about"
@@ -83,9 +110,9 @@ export function AboutSection({ data, timeline, stats }: AboutSectionProps) {
         )}
 
         {/* Timeline */}
-        {timeline.length > 0 && (
+        {timelineWithIcons.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16 md:mb-20">
-            {timeline.map((item, idx) => (
+            {timelineWithIcons.map((item, idx) => (
               <motion.div
                 key={idx}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -109,11 +136,6 @@ export function AboutSection({ data, timeline, stats }: AboutSectionProps) {
                     {item.description}
                   </p>
                 )}
-
-                {/* Arrow */}
-                <div className="absolute bottom-4 right-4 text-amber-600">
-                  <FaArrowRight size={20} />
-                </div>
               </motion.div>
             ))}
           </div>
@@ -123,7 +145,7 @@ export function AboutSection({ data, timeline, stats }: AboutSectionProps) {
         {stats.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center mb-16 md:mb-24">
             {stats.map((item, idx) => (
-              <StatCard key={idx} {...item} />
+              <StatCard key={idx} {...item} base="yellow" hover="amber" />
             ))}
           </div>
         )}

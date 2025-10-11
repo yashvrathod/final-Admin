@@ -331,6 +331,25 @@ export function PortfolioSection({
     },
   ];
 
+  const InterestCard = ({ icon: Icon, title, items }) => (
+    <div className="bg-white rounded-xl shadow-sm border border-amber-100 p-6 hover:shadow-md transition">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-10 h-10 flex items-center justify-center bg-amber-100 rounded-full text-amber-800 shadow">
+          <Icon size={20} />
+        </div>
+        <h3 className="font-semibold text-lg text-amber-900">{title}</h3>
+      </div>
+      <ul className="space-y-2 text-stone-700">
+        {items.map((interest, index) => (
+          <li key={index} className="flex items-start gap-2">
+            <span className="text-amber-700 mt-1">•</span>
+            <span>{interest}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
   return (
     <section
       id="portfolio"
@@ -370,7 +389,7 @@ export function PortfolioSection({
             className="bg-white rounded-2xl space-y-12 sm:space-y-10 lg:space-y-12" // only spacing, remove extra bg/padding
           >
             {/* Keep the Overview exactly as it is */}
-            <div className="space-y-12 m-6 sm:m-8 lg:m-10 rounded-lg bg-white">
+            <div className="space-y-12 m-6 sm:m-8 lg:m-10 rounded-lg">
               {/* Professional Profile */}
               <SectionWrapper
                 title={
@@ -481,7 +500,7 @@ export function PortfolioSection({
                                   : ""
                               }`}
                             >
-                              {item.title || item.description}
+                              {item.title || item.interest}
                             </h3>
                           </div>
 

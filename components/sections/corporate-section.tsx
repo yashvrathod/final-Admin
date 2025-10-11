@@ -16,16 +16,24 @@ interface CorporateSectionProps {
 }
 
 export function CorporateSection({ data }: CorporateSectionProps) {
-
   const industryVisits = [
-  { name: "Mag Power, Pune", link: "https://magpowerpune.com/" },
-  { name: "Revogreen Technologies Pvt. Ltd., Pune", link: "https://revogreen.in/" },
-  { name: "Halliburton, Pune", link: "https://www.halliburton.com/" },
-  { name: "H. B. Fuller", link: "https://www.hbfuller.com/" },
-  { name: "Intenics Private Limited, Jabalpur", link: "https://intenics.in/" }
-];
+    { name: "Mag Power, Pune", link: "https://magpowerpune.com/" },
+    {
+      name: "Revogreen Technologies Pvt. Ltd., Pune",
+      link: "https://revogreen.in/",
+    },
+    { name: "Halliburton, Pune", link: "https://www.halliburton.com/" },
+    { name: "H. B. Fuller", link: "https://www.hbfuller.com/" },
+    {
+      name: "Intenics Private Limited, Jabalpur",
+      link: "https://intenics.in/",
+    },
+  ];
   return (
-    <section id="corporate" className="py-16 bg-white dark:bg-slate-950">
+    <section
+      id="corporate"
+      className="py-16 bg-gradient-to-r from-amber-50 to-yellow-100 border-amber-200"
+    >
       <div className="space-y-10">
         {/* Main Heading */}
         <h2 className="text-5xl font-extrabold text-center text-amber-900 mb-14 tracking-wide pt-[23px] pb-[20px]">
