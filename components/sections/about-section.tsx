@@ -40,7 +40,7 @@ interface StatCardProps {
   label: string;
   value: string | number;
   icon?: ReactNode;
-  base?: string;  // Tailwind color for bg/border
+  base?: string; // Tailwind color for bg/border
   hover?: string; // Tailwind color for icon/label hover
 }
 
@@ -165,14 +165,6 @@ export function AboutSection({ data, timeline, stats }: AboutSectionProps) {
             <FaEnvelope size={24} /> Email
           </a>
 
-          {/* WhatsApp */}
-          <a
-            href="tel:+919325383604"
-            className="flex items-center gap-3 px-8 py-3 bg-white border border-amber-600 text-amber-800 rounded-full text-lg font-medium shadow hover:bg-yellow-100 transition"
-          >
-            <FaPhoneAlt size={24} /> WhatsApp
-          </a>
-
           {/* LinkedIn */}
           <a
             href="https://www.linkedin.com/in/dr-anup-ingle-bb56a1148/"
@@ -181,6 +173,14 @@ export function AboutSection({ data, timeline, stats }: AboutSectionProps) {
             className="flex items-center gap-3 px-8 py-3 bg-yellow-100 border border-amber-300 text-amber-900 rounded-full text-lg font-medium shadow hover:bg-yellow-200 transition"
           >
             <FaLinkedin size={24} /> LinkedIn
+          </a>
+
+          {/* WhatsApp */}
+          <a
+            href="tel:+919325383604"
+            className="flex items-center gap-3 px-8 py-3 bg-white border border-amber-600 text-amber-800 rounded-full text-lg font-medium shadow hover:bg-yellow-100 transition"
+          >
+            <FaPhoneAlt size={24} /> WhatsApp
           </a>
         </motion.div>
       </div>
