@@ -16,7 +16,10 @@ export async function POST(req: Request) {
   const matchPassword = bcrypt.compareSync(password, HASHED_PASSWORD);
 
   if (!matchEmail || !matchPassword) {
-    return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
+    return NextResponse.json(
+      { message: "Invalid credentials" },
+      { status: 401 }
+    );
   }
 
   const token = jwt.sign({ role: "admin" }, JWT_SECRET, { expiresIn: "1h" });
