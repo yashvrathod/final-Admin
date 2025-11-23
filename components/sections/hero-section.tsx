@@ -38,7 +38,7 @@ export function HeroSection() {
             <div className="p-4">
               {/* VisitorCounter */}
               {/* <VisitorCounter /> */}
-              <VisitsStats />
+              {/* <VisitsStats /> */}
             </div>
           </div>
         </div>

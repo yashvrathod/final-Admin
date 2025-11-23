@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Settings,
@@ -21,7 +21,8 @@ import {
   BookMarked,
   Lightbulb,
   Users,
-} from "lucide-react"
+} from "lucide-react";
+import { LogoutButton } from "../logout";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
@@ -45,21 +46,26 @@ const menuItems = [
   { icon: MessageSquare, label: "Testimonials", href: "/admin/testimonials" },
   { icon: Mail, label: "Contact Submissions", href: "/admin/contact" },
   { icon: Users, label: "Admin Users", href: "/admin/users" },
-]
+];
 
 export function AdminSidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 overflow-y-auto">
       <div className="p-6 border-b border-slate-200 dark:border-slate-800">
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Academic CMS</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Admin Panel</p>
+        <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+          Academic CMS
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Admin Panel
+        </p>
+        <LogoutButton />
       </div>
       <nav className="p-4 space-y-1">
         {menuItems.map((item) => {
-          const Icon = item.icon
-          const isActive = pathname === item.href
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
@@ -68,15 +74,15 @@ export function AdminSidebar() {
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                 isActive
                   ? "bg-primary text-primary-foreground"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800",
+                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
               )}
             >
               <Icon className="h-4 w-4" />
               {item.label}
             </Link>
-          )
+          );
         })}
       </nav>
     </aside>
-  )
+  );
 }
